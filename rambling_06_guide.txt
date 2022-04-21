@@ -1,0 +1,16 @@
+# How to use the <rambling_06> interpreter:
+#   install some compatible python version. 3.8 thru 3.10 are compatible.
+#   ensure importlib is installed (test by typing 'import importlib' in the console)
+#   save, for user reference, the text file "rambling_06_help.py"
+#       seriously, it's just one huge python comment.
+#       well, it has some code, but that code is a comment to myself.
+#   save "rambling_06_pyc_importless.py" to some FILEPATH
+#   open up a python console in a compatible version.
+#   paste::
+import importlib.util as util
+spec = util.spec_from_file_location("rambling_06_pyc_importless", FILEPATH)
+rambling = util.module_from_spec(spec)
+spec.loader.exec_module(rambling)
+del spec
+# "rambling" now refers to the module.
+# rambling.main() is the main loop
