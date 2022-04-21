@@ -28,8 +28,7 @@ there are 3.1 types of data objects:
     int # an integer. simple.
     str # a string. simple.
         chr # a string of length 1.
-    macro # a macro object which is always first defined as a variable
-        # however macros can be sent anywhere else and preserved after local dereferencing
+    macro # a macro object, basically a function
 
 GUIDE:
     the entire file being executed is considered a "macro".
@@ -55,7 +54,7 @@ function __expr__ templates:
         i expect the most common idiom with this to be "if ... current" (recursion)
     break
         returns a function which, when called, will exit the function in which it was named
-        (execution is moved to the end of the __routine__ in which the 'quit' keyword was evaluated)
+        (execution is moved to the end of the __routine__ in which the 'break' keyword was evaluated)
         when a function exits, the associated <break> function deactivates, and does nothing when called
         one function's break CAN be called from a nested function if its reference is passed along.
         
@@ -98,7 +97,7 @@ stack __expr__ templates:
         ...
         as a statement: 'pop' is replaced with 'del'
     get __name__ __i__ # returns an element from __name__
-        as a statement: 'get' is removed completely
+        as a statement: 'get' does nothing
     size __name__
         returns, as a nonnegative integer, the length of the current stack.
         this is MUCH more optimized than any alternative.
@@ -133,7 +132,7 @@ stack __statement__ templates:
         length = abs(__start__ - __end__)
         if length is zero, nothing happens.
         n = __n__ % length
-        if __n__ is zero, nothing happens.
+        if n is zero, nothing happens.
 
 string __expr__ templates:
     read
@@ -152,7 +151,7 @@ string __expr__ templates:
                 uses 0 for __start__
             uses __value__.index(__start__)+len(__start__) for __start__
         if __end__ is an integer:
-            using __end__%len(__value__) for __end__
+            uses __end__%len(__value__) for __end__
         if __end__ is a string:
             if __end__ is not in __value__:
                 uses len(__value__) for __end__
@@ -211,7 +210,7 @@ integer __expr__ templates:
     neg __value__
         numerically negates an int
     not __value__
-        bitwise negates an int
+        bitwise negates an int; or takes boolean not of a string.
         empty strings become -1, other strings become 0
 
 nary integer __expr__ templates:
@@ -241,8 +240,8 @@ integer __statement__ templates:
         if divisor < 0: <mod> <= 0
         always: divisor = <div>*dividend + <mod>
         pushes <mod> and then <div>, so that
-        index 0 becomes the quotient, and
-        index 1 becomes the remainder.
+        index 0 is the quotient, and
+        index 1 is the remainder.
 
 stack-len preserving integer __statement__ templates:
     sort __name__ __n__
@@ -253,15 +252,17 @@ stack-len preserving integer __statement__ templates:
         followed by all ints
             ints are sorted in ascending order (end of list == most positive integer)
     ineg __name__ __n__ # algebraic NEG
-        in-place negates the first __n__ elements
-        x & -x = smallest binary bit of x
-        x + -x = 0 = ; x | -x = -(x & -x); x ^ -x = -2*(x & -x)
-        notably: neg is self-reversing
+        in-place negates the first __n__ elements.
+        some properties:
+            x & -x = smallest binary bit of x
+            x + -x = 0 = ; x | -x = -(x & -x); x ^ -x = -2*(x & -x)
+            neg is self-reversing
     inot __name__ __n__ # bitwise NOT
         in-place inverts the first __n__ elements
-        x + ~x = x | ~x = x ^ ~x = -1; x & ~x = 0
-        empty strings become -1, other strings become 0
-        notably: not is self-reversing for integers
+        some properties:
+            x + ~x = x | ~x = x ^ ~x = -1; x & ~x = 0
+            empty strings become -1, other strings become 0
+            not is self-reversing for integers
     bitsort __name__ __n__ # sorts the bits in the first __n__ values so that the last value has the fewest
         this is implemented via a boolean bubble sort method, repeating about __n__ times:
             ant, sub = (ant|sub, ant&sub)
